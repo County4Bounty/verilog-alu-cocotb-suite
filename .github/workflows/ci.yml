@@ -1,0 +1,25 @@
+name: Verification Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install iverilog & cocotb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog
+          python -m pip install --upgrade pip
+          pip install cocotb pytest
+
+      - name: Run Verification Suite
+        run: |
+          python test_runner.py
