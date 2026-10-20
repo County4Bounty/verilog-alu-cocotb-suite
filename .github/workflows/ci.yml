@@ -22,4 +22,4 @@ jobs:
 
       - name: Run Verification Suite
         run: |
-          python test_runner.py
+          PYTHONPATH=tests python test_runner.py
