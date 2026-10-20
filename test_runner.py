@@ -2,7 +2,6 @@ import os
 import sys
 from pathlib import Path
 
-# Support both older Cocotb 1.x and the new Cocotb 2.x directory structures
 try:
     from cocotb.runner import get_runner
 except ImportError:
@@ -13,7 +12,6 @@ def test_alu_runner():
     proj_path = Path(__file__).resolve().parent
     tests_dir = proj_path / "tests"
 
-    # Explicitly ensure child simulation processes can find test_alu.py
     sys.path.insert(0, str(tests_dir))
     os.environ["PYTHONPATH"] = str(tests_dir) + os.pathsep + os.environ.get("PYTHONPATH", "")
 
@@ -29,10 +27,4 @@ def test_alu_runner():
     )
 
 if __name__ == "__main__":
-    test_alu_runner():
-    runner.test(
-        hdl_toplevel="alu",
-        test_module="test_alu",
-        test_dir=tests_dir,
-        waves=True,  # Enables VCD waveform generation
-    )
+    test_alu_runner()
