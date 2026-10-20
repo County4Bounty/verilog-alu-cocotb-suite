@@ -29,4 +29,10 @@ def test_alu_runner():
     )
 
 if __name__ == "__main__":
-    test_alu_runner()
+    test_alu_runner():
+    runner.test(
+        hdl_toplevel="alu",
+        test_module="test_alu",
+        test_dir=tests_dir,
+        waves=True,  # Enables VCD waveform generation
+    )
