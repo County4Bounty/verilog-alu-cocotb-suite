@@ -23,7 +23,7 @@ def test_alu_runner():
     )
     runner.test(
         hdl_toplevel="alu",
-        test_module="test_alu"
+        test_module="test_alu,test_alu_flags"
     )
 
 if __name__ == "__main__":

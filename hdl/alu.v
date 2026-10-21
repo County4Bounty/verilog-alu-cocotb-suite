@@ -7,31 +7,37 @@ module alu (
     input  wire [7:0]  b,
     input  wire [2:0]  op,
     output reg  [7:0]  result,
-    output wire        zero
+    output reg         carry,
+    output wire        zero,
+    output wire        negative
 );
-    // Internal combinational wire for calculation
-    reg [7:0] calc_result;
+    // 9-bit combinational result: bit 8 is carry/borrow/shifted-out bit
+    reg [8:0] calc;
 
     always @(*) begin
         case (op)
-            3'b000: calc_result = a + b;       // ADD
-            3'b001: calc_result = a - b;       // SUB
-            3'b010: calc_result = a & b;       // AND
-            3'b011: calc_result = a | b;       // OR
-            3'b100: calc_result = a ^ b;       // XOR
-            3'b101: calc_result = a << 1;      // SHL
-            default: calc_result = 8'h00;
+            3'b000: calc = {1'b0, a} + {1'b0, b};   // ADD
+            3'b001: calc = {1'b0, a} - {1'b0, b};   // SUB (bit 8 = borrow)
+            3'b010: calc = {1'b0, a & b};           // AND
+            3'b011: calc = {1'b0, a | b};           // OR
+            3'b100: calc = {1'b0, a ^ b};           // XOR
+            3'b101: calc = {a[7], a[6:0], 1'b0};    // SHL (carry = bit shifted out)
+            3'b110: calc = {a[0], 1'b0, a[7:1]};    // SHR (carry = bit shifted out)
+            3'b111: calc = {1'b0, ~a};              // NOT
+            default: calc = 9'h000;
         endcase
     end
 
-    // Sequential logic: Register the result on the rising clock edge
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             result <= 8'h00;
+            carry  <= 1'b0;
         end else begin
-            result <= calc_result;
+            result <= calc[7:0];
+            carry  <= calc[8];
         end
     end
 
-    assign zero = (result == 8'h00);
+    assign zero     = (result == 8'h00);
+    assign negative = result[7];
 endmodule
